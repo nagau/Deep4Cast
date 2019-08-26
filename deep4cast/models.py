@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torch.nn.function as F
 
 from deep4cast import custom_layers
 
@@ -152,8 +153,8 @@ class WaveNet(torch.nn.Module):
         output_std, res_linear_std = self.do_linear_std(inputs)
         output_df, res_linear_df = self.do_linear_df(inputs)
         output_mean = self.linear_mean(output_mean)
-        output_std = self.linear_std(output_std).exp()
-        output_df = self.linear_df(output_df).exp()
+        output_std = F.softplus(self.linear_std(output_std))
+        output_df = F.softplus(self.linear_df(output_df))
 
         # Reshape the layer output to match targets
         # Shape is (batch_size, output_channels, horizon)
